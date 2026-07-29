@@ -33,3 +33,41 @@ showSuspectFormButton.addEventListener("click", function () {
 cancelSuspectFormButton.addEventListener("click", function () {
     suspectForm.classList.add("hidden");
 });
+
+const suspects = [
+    {
+        id: 1001,
+        name: "John Smith",
+        dateOfBirth: "1990-02-11",
+        riskLevel: 3
+    },
+    {
+        id: 1002,
+        name: "Sarah Jones",
+        dateOfBirth: "1985-07-22",
+        riskLevel: 5
+    }
+];
+
+const suspectTable = document.getElementById("suspect-table");
+
+function displaySuspects() {
+    suspectTable.innerHTML = "";
+
+    suspects.forEach(function (suspect) {
+        const row = document.createElement("tr");
+        row.className = "border-b";
+
+        row.innerHTML = `
+            <td class="p-3">${suspect.id}</td>
+            <td class="p-3">${suspect.name}</td>
+            <td class="p-3">${suspect.dateOfBirth}</td>
+            <td class="p-3">${suspect.riskLevel}</td>
+            <td class="p-3">No actions yet</td>
+        `;
+
+        suspectTable.appendChild(row);
+    });
+}
+
+displaySuspects();
