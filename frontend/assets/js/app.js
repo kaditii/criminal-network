@@ -1,6 +1,8 @@
+// Gets the navigation buttons and all of the pages.
 const navButtons = document.querySelectorAll(".nav-button");
 const pages = document.querySelectorAll(".page");
 
+// Hides the other pages and shows the page the user selected.
 function showPage(pageName) {
     pages.forEach(function (page) {
         page.classList.add("hidden");
@@ -17,11 +19,13 @@ function showPage(pageName) {
 }
 
 navButtons.forEach(function (button) {
+    // Changes the page when a navigation button is clicked.
     button.addEventListener("click", function () {
         showPage(button.dataset.page);
     });
 });
 
+// Gets the suspect form and its two control buttons.
 const suspectForm = document.getElementById("suspect-form");
 const showSuspectFormButton = document.getElementById("show-suspect-form");
 const cancelSuspectFormButton = document.getElementById("cancel-suspect-form");
@@ -34,6 +38,7 @@ cancelSuspectFormButton.addEventListener("click", function () {
     suspectForm.classList.add("hidden");
 });
 
+// This is temporary sample data until the database is connected.
 const suspects = [
     {
         id: 1001,
@@ -51,6 +56,7 @@ const suspects = [
 
 const suspectTable = document.getElementById("suspect-table");
 
+// Goes through the suspects and adds each one to the table.
 function displaySuspects() {
     suspectTable.innerHTML = "";
 
@@ -70,4 +76,5 @@ function displaySuspects() {
     });
 }
 
+// Displays the sample suspects when the page first loads.
 displaySuspects();
