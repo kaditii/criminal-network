@@ -1,1 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criminal Network Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="bg-gray-100 text-gray-900">
+    <header class="bg-gray-900 p-4 text-white">
+        <h1 class="text-xl font-bold">Criminal Network Analysis System</h1>
+    </header>
 
+    <nav class="bg-white p-3 shadow">
+        <div class="mx-auto flex max-w-5xl gap-3">
+            <button class="nav-button rounded bg-red-700 px-3 py-2 text-white" data-page="suspects">
+                Suspects
+            </button>
+            <button class="nav-button rounded px-3 py-2" data-page="crimes">
+                Crimes
+            </button>
+            <button class="nav-button rounded px-3 py-2" data-page="relationships">
+                Relationships
+            </button>
+            <button class="nav-button rounded px-3 py-2" data-page="network">
+                Network
+            </button>
+        </div>
+    </nav>
+
+    <main class="mx-auto max-w-5xl p-6">
+        <section id="suspects-page" class="page">
+            <h2 class="text-2xl font-semibold">Suspects</h2>
+            <p class="mt-2 text-gray-600">Suspect records will be shown here.</p>
+        </section>
+
+        <section id="crimes-page" class="page hidden">
+            <h2 class="text-2xl font-semibold">Crimes</h2>
+            <p class="mt-2 text-gray-600">Crime records will be shown here.</p>
+        </section>
+
+        <section id="relationships-page" class="page hidden">
+            <h2 class="text-2xl font-semibold">Relationships</h2>
+            <p class="mt-2 text-gray-600">Relationships will be managed here.</p>
+        </section>
+
+        <section id="network-page" class="page hidden">
+            <h2 class="text-2xl font-semibold">Network</h2>
+            <p class="mt-2 text-gray-600">The network graph will be shown here.</p>
+        </section>
+    </main>
+
+    <script src="assets/js/app.js"></script>
+</body>
+</html>
