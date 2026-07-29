@@ -29,6 +29,9 @@ navButtons.forEach(function (button) {
 const suspectForm = document.getElementById("suspect-form");
 const showSuspectFormButton = document.getElementById("show-suspect-form");
 const cancelSuspectFormButton = document.getElementById("cancel-suspect-form");
+const suspectNameInput = document.getElementById("suspect-name");
+const suspectDobInput = document.getElementById("suspect-dob");
+const suspectRiskInput = document.getElementById("suspect-risk");
 
 showSuspectFormButton.addEventListener("click", function () {
     suspectForm.classList.remove("hidden");
@@ -75,6 +78,38 @@ function displaySuspects() {
         suspectTable.appendChild(row);
     });
 }
+
+// Finds the next ID by adding one to the current highest ID.
+function getNextSuspectId() {
+    if (suspects.length === 0) {
+        return 1001;
+    }
+
+    const currentIds = suspects.map(function (suspect) {
+        return suspect.id;
+    });
+
+    return Math.max(...currentIds) + 1;
+}
+
+// Adds the form values as a new suspect in the temporary array.
+suspectForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const newSuspect = {
+        id: getNextSuspectId(),
+        name: suspectNameInput.value,
+        dateOfBirth: suspectDobInput.value,
+        riskLevel: Number(suspectRiskInput.value)
+    };
+
+    suspects.push(newSuspect);
+    displaySuspects();
+
+    // Clears and closes the form after the suspect has been added.
+    suspectForm.reset();
+    suspectForm.classList.add("hidden");
+});
 
 // Displays the sample suspects when the page first loads.
 displaySuspects();

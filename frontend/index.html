@@ -44,17 +44,19 @@
                 <div class="grid gap-4 md:grid-cols-3">
                     <div>
                         <label for="suspect-name" class="mb-1 block">Name</label>
-                        <input id="suspect-name" type="text" class="w-full rounded border p-2">
+                        <input id="suspect-name" type="text" required
+                               class="w-full rounded border p-2">
                     </div>
 
                     <div>
                         <label for="suspect-dob" class="mb-1 block">Date of birth</label>
-                        <input id="suspect-dob" type="date" class="w-full rounded border p-2">
+                        <input id="suspect-dob" type="date" required
+                               class="w-full rounded border p-2">
                     </div>
 
                     <div>
                         <label for="suspect-risk" class="mb-1 block">Risk level</label>
-                        <input id="suspect-risk" type="number" min="1" max="5"
+                        <input id="suspect-risk" type="number" min="1" max="5" required
                                class="w-full rounded border p-2">
                     </div>
                 </div>
