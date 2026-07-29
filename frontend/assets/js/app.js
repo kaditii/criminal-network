@@ -21,3 +21,15 @@ navButtons.forEach(function (button) {
         showPage(button.dataset.page);
     });
 });
+
+const suspectForm = document.getElementById("suspect-form");
+const showSuspectFormButton = document.getElementById("show-suspect-form");
+const cancelSuspectFormButton = document.getElementById("cancel-suspect-form");
+
+showSuspectFormButton.addEventListener("click", function () {
+    suspectForm.classList.remove("hidden");
+});
+
+cancelSuspectFormButton.addEventListener("click", function () {
+    suspectForm.classList.add("hidden");
+});
