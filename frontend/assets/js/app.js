@@ -32,12 +32,15 @@ const cancelSuspectFormButton = document.getElementById("cancel-suspect-form");
 const suspectNameInput = document.getElementById("suspect-name");
 const suspectDobInput = document.getElementById("suspect-dob");
 const suspectRiskInput = document.getElementById("suspect-risk");
+const suspectFormError = document.getElementById("suspect-form-error");
 
 showSuspectFormButton.addEventListener("click", function () {
     suspectForm.classList.remove("hidden");
 });
 
 cancelSuspectFormButton.addEventListener("click", function () {
+    suspectFormError.textContent = "";
+    suspectForm.reset();
     suspectForm.classList.add("hidden");
 });
 
@@ -92,21 +95,62 @@ function getNextSuspectId() {
     return Math.max(...currentIds) + 1;
 }
 
+// Checks the suspect details and returns an error message if needed.
+function validateSuspect(name, dateOfBirth, riskLevel) {
+    const namePattern = /^[a-zA-Z -]+$/;
+    const today = new Date().toISOString().split("T")[0];
+
+    if (!namePattern.test(name)) {
+        return "The name must only contain letters, spaces or hyphens.";
+    }
+
+    if (dateOfBirth > today) {
+        return "The date of birth cannot be in the future.";
+    }
+
+    if (riskLevel < 1 || riskLevel > 5) {
+        return "The risk level must be between 1 and 5.";
+    }
+
+    const isDuplicate = suspects.some(function (suspect) {
+        return suspect.name.toLowerCase() === name.toLowerCase()
+            && suspect.dateOfBirth === dateOfBirth;
+    });
+
+    if (isDuplicate) {
+        return "A suspect with this name and date of birth already exists.";
+    }
+
+    return "";
+}
+
 // Adds the form values as a new suspect in the temporary array.
 suspectForm.addEventListener("submit", function (event) {
     event.preventDefault();
 
+    const name = suspectNameInput.value.trim();
+    const dateOfBirth = suspectDobInput.value;
+    const riskLevel = Number(suspectRiskInput.value);
+    const errorMessage = validateSuspect(name, dateOfBirth, riskLevel);
+
+    // Stops the suspect being added when the input is invalid.
+    if (errorMessage !== "") {
+        suspectFormError.textContent = errorMessage;
+        return;
+    }
+
     const newSuspect = {
         id: getNextSuspectId(),
-        name: suspectNameInput.value,
-        dateOfBirth: suspectDobInput.value,
-        riskLevel: Number(suspectRiskInput.value)
+        name: name,
+        dateOfBirth: dateOfBirth,
+        riskLevel: riskLevel
     };
 
     suspects.push(newSuspect);
     displaySuspects();
 
     // Clears and closes the form after the suspect has been added.
+    suspectFormError.textContent = "";
     suspectForm.reset();
     suspectForm.classList.add("hidden");
 });
