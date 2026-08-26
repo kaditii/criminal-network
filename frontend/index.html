@@ -38,6 +38,19 @@
                 </button>
             </div>
 
+            <div class="mb-4 grid gap-3 md:grid-cols-2">
+                <input id="suspect-search" type="search" placeholder="Search by name"
+                       class="rounded border bg-white p-2">
+                <select id="risk-filter" class="rounded border bg-white p-2">
+                    <option value="">All risk levels</option>
+                    <option value="1">Risk level 1</option>
+                    <option value="2">Risk level 2</option>
+                    <option value="3">Risk level 3</option>
+                    <option value="4">Risk level 4</option>
+                    <option value="5">Risk level 5</option>
+                </select>
+            </div>
+
             <form id="suspect-form" class="mb-6 hidden rounded bg-white p-4 shadow">
                 <h3 id="suspect-form-title" class="mb-4 text-lg font-semibold">New suspect</h3>
 

@@ -35,6 +35,8 @@ const suspectRiskInput = document.getElementById("suspect-risk");
 const suspectFormError = document.getElementById("suspect-form-error");
 const suspectFormTitle = document.getElementById("suspect-form-title");
 const saveSuspectButton = document.getElementById("save-suspect");
+const suspectSearch = document.getElementById("suspect-search");
+const riskFilter = document.getElementById("risk-filter");
 let editingSuspectId = null;
 
 showSuspectFormButton.addEventListener("click", function () {
@@ -69,18 +71,28 @@ const suspectTable = document.getElementById("suspect-table");
 function displaySuspects() {
     suspectTable.innerHTML = "";
 
-    if (suspects.length === 0) {
+    // Gets the values selected by the user for searching and filtering.
+    const searchText = suspectSearch.value.toLowerCase();
+    const selectedRisk = riskFilter.value;
+    const filteredSuspects = suspects.filter(function (suspect) {
+        const nameMatches = suspect.name.toLowerCase().includes(searchText);
+        const riskMatches = selectedRisk === "" || suspect.riskLevel === Number(selectedRisk);
+
+        return nameMatches && riskMatches;
+    });
+
+    if (filteredSuspects.length === 0) {
         suspectTable.innerHTML = `
             <tr>
                 <td colspan="5" class="p-4 text-center text-gray-500">
-                    No suspects added yet.
+                    No suspects match your search.
                 </td>
             </tr>
         `;
         return;
     }
 
-    suspects.forEach(function (suspect) {
+    filteredSuspects.forEach(function (suspect) {
         const row = document.createElement("tr");
         row.className = "border-b";
 
@@ -122,6 +134,10 @@ function displaySuspects() {
         });
     });
 }
+
+// Updates the table when the search or risk filter changes.
+suspectSearch.addEventListener("input", displaySuspects);
+riskFilter.addEventListener("change", displaySuspects);
 
 // Opens the form and fills it with the suspect's current details.
 function editSuspect(suspectId) {
