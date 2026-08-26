@@ -139,6 +139,22 @@ function displaySuspects() {
 suspectSearch.addEventListener("input", displaySuspects);
 riskFilter.addEventListener("change", displaySuspects);
 
+// Gets the crime form and its buttons.
+const crimeForm = document.getElementById("crime-form");
+const showCrimeFormButton = document.getElementById("show-crime-form");
+const cancelCrimeFormButton = document.getElementById("cancel-crime-form");
+
+// Opens the form when the user wants to add a crime.
+showCrimeFormButton.addEventListener("click", function () {
+    crimeForm.classList.remove("hidden");
+});
+
+// Closes and clears the form when the user cancels.
+cancelCrimeFormButton.addEventListener("click", function () {
+    crimeForm.reset();
+    crimeForm.classList.add("hidden");
+});
+
 // Opens the form and fills it with the suspect's current details.
 function editSuspect(suspectId) {
     const suspect = suspects.find(function (item) {

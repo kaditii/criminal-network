@@ -111,8 +111,53 @@
         </section>
 
         <section id="crimes-page" class="page hidden">
-            <h2 class="text-2xl font-semibold">Crimes</h2>
-            <p class="mt-2 text-gray-600">Crime records will be shown here.</p>
+            <div class="mb-4 flex items-center justify-between">
+                <h2 class="text-2xl font-semibold">Crimes</h2>
+                <button id="show-crime-form" class="rounded bg-red-700 px-4 py-2 text-white">
+                    Add crime
+                </button>
+            </div>
+
+            <form id="crime-form" class="mb-6 hidden rounded bg-white p-4 shadow">
+                <h3 class="mb-4 text-lg font-semibold">New crime</h3>
+                <div class="grid gap-4 md:grid-cols-3">
+                    <div>
+                        <label for="crime-type" class="mb-1 block">Crime type</label>
+                        <input id="crime-type" type="text" required class="w-full rounded border p-2">
+                    </div>
+                    <div>
+                        <label for="crime-date" class="mb-1 block">Date</label>
+                        <input id="crime-date" type="date" required class="w-full rounded border p-2">
+                    </div>
+                    <div>
+                        <label for="crime-location" class="mb-1 block">Location</label>
+                        <input id="crime-location" type="text" required class="w-full rounded border p-2">
+                    </div>
+                </div>
+                <div class="mt-4 flex gap-2">
+                    <button type="submit" class="rounded bg-red-700 px-4 py-2 text-white">Save</button>
+                    <button id="cancel-crime-form" type="button" class="rounded bg-gray-300 px-4 py-2">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+
+            <div class="overflow-x-auto rounded bg-white shadow">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-800 text-white">
+                        <tr>
+                            <th class="p-3">ID</th>
+                            <th class="p-3">Type</th>
+                            <th class="p-3">Date</th>
+                            <th class="p-3">Location</th>
+                            <th class="p-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="crime-table">
+                        <tr><td colspan="5" class="p-4 text-center text-gray-500">No crimes added yet.</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </section>
 
         <section id="relationships-page" class="page hidden">
