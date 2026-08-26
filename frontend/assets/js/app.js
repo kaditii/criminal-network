@@ -33,14 +33,17 @@ const suspectNameInput = document.getElementById("suspect-name");
 const suspectDobInput = document.getElementById("suspect-dob");
 const suspectRiskInput = document.getElementById("suspect-risk");
 const suspectFormError = document.getElementById("suspect-form-error");
+const suspectFormTitle = document.getElementById("suspect-form-title");
+const saveSuspectButton = document.getElementById("save-suspect");
+let editingSuspectId = null;
 
 showSuspectFormButton.addEventListener("click", function () {
+    resetSuspectForm();
     suspectForm.classList.remove("hidden");
 });
 
 cancelSuspectFormButton.addEventListener("click", function () {
-    suspectFormError.textContent = "";
-    suspectForm.reset();
+    resetSuspectForm();
     suspectForm.classList.add("hidden");
 });
 
@@ -66,6 +69,17 @@ const suspectTable = document.getElementById("suspect-table");
 function displaySuspects() {
     suspectTable.innerHTML = "";
 
+    if (suspects.length === 0) {
+        suspectTable.innerHTML = `
+            <tr>
+                <td colspan="5" class="p-4 text-center text-gray-500">
+                    No suspects added yet.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
     suspects.forEach(function (suspect) {
         const row = document.createElement("tr");
         row.className = "border-b";
@@ -75,11 +89,81 @@ function displaySuspects() {
             <td class="p-3">${suspect.name}</td>
             <td class="p-3">${suspect.dateOfBirth}</td>
             <td class="p-3">${suspect.riskLevel}</td>
-            <td class="p-3">No actions yet</td>
+            <td class="p-3">
+                <button class="edit-suspect mr-2 rounded bg-blue-700 px-3 py-1 text-white"
+                        data-id="${suspect.id}">
+                    Edit
+                </button>
+                <button class="delete-suspect rounded bg-red-700 px-3 py-1 text-white"
+                        data-id="${suspect.id}">
+                    Delete
+                </button>
+            </td>
         `;
 
         suspectTable.appendChild(row);
     });
+
+    // Adds a click event to each edit button after the rows are created.
+    const editButtons = document.querySelectorAll(".edit-suspect");
+
+    editButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            editSuspect(Number(button.dataset.id));
+        });
+    });
+
+    // Adds a click event to each delete button after the rows are created.
+    const deleteButtons = document.querySelectorAll(".delete-suspect");
+
+    deleteButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            deleteSuspect(Number(button.dataset.id));
+        });
+    });
+}
+
+// Opens the form and fills it with the suspect's current details.
+function editSuspect(suspectId) {
+    const suspect = suspects.find(function (item) {
+        return item.id === suspectId;
+    });
+
+    editingSuspectId = suspectId;
+    suspectNameInput.value = suspect.name;
+    suspectDobInput.value = suspect.dateOfBirth;
+    suspectRiskInput.value = suspect.riskLevel;
+    suspectFormTitle.textContent = "Edit suspect";
+    saveSuspectButton.textContent = "Update";
+    suspectFormError.textContent = "";
+    suspectForm.classList.remove("hidden");
+}
+
+// Returns the form to add mode and clears its inputs.
+function resetSuspectForm() {
+    editingSuspectId = null;
+    suspectForm.reset();
+    suspectFormError.textContent = "";
+    suspectFormTitle.textContent = "New suspect";
+    saveSuspectButton.textContent = "Save";
+}
+
+// Removes a suspect from the array after the user confirms it.
+function deleteSuspect(suspectId) {
+    const suspect = suspects.find(function (item) {
+        return item.id === suspectId;
+    });
+
+    const confirmed = confirm("Delete " + suspect.name + "?");
+
+    if (confirmed) {
+        const suspectPosition = suspects.findIndex(function (item) {
+            return item.id === suspectId;
+        });
+
+        suspects.splice(suspectPosition, 1);
+        displaySuspects();
+    }
 }
 
 // Finds the next ID by adding one to the current highest ID.
@@ -96,7 +180,7 @@ function getNextSuspectId() {
 }
 
 // Checks the suspect details and returns an error message if needed.
-function validateSuspect(name, dateOfBirth, riskLevel) {
+function validateSuspect(name, dateOfBirth, riskLevel, suspectId) {
     const namePattern = /^[a-zA-Z -]+$/;
     const today = new Date().toISOString().split("T")[0];
 
@@ -113,7 +197,8 @@ function validateSuspect(name, dateOfBirth, riskLevel) {
     }
 
     const isDuplicate = suspects.some(function (suspect) {
-        return suspect.name.toLowerCase() === name.toLowerCase()
+        return suspect.id !== suspectId
+            && suspect.name.toLowerCase() === name.toLowerCase()
             && suspect.dateOfBirth === dateOfBirth;
     });
 
@@ -131,7 +216,7 @@ suspectForm.addEventListener("submit", function (event) {
     const name = suspectNameInput.value.trim();
     const dateOfBirth = suspectDobInput.value;
     const riskLevel = Number(suspectRiskInput.value);
-    const errorMessage = validateSuspect(name, dateOfBirth, riskLevel);
+    const errorMessage = validateSuspect(name, dateOfBirth, riskLevel, editingSuspectId);
 
     // Stops the suspect being added when the input is invalid.
     if (errorMessage !== "") {
@@ -139,19 +224,30 @@ suspectForm.addEventListener("submit", function (event) {
         return;
     }
 
-    const newSuspect = {
-        id: getNextSuspectId(),
-        name: name,
-        dateOfBirth: dateOfBirth,
-        riskLevel: riskLevel
-    };
+    if (editingSuspectId === null) {
+        const newSuspect = {
+            id: getNextSuspectId(),
+            name: name,
+            dateOfBirth: dateOfBirth,
+            riskLevel: riskLevel
+        };
 
-    suspects.push(newSuspect);
+        suspects.push(newSuspect);
+    } else {
+        // Updates the existing suspect instead of adding another one.
+        const suspect = suspects.find(function (item) {
+            return item.id === editingSuspectId;
+        });
+
+        suspect.name = name;
+        suspect.dateOfBirth = dateOfBirth;
+        suspect.riskLevel = riskLevel;
+    }
+
     displaySuspects();
 
     // Clears and closes the form after the suspect has been added.
-    suspectFormError.textContent = "";
-    suspectForm.reset();
+    resetSuspectForm();
     suspectForm.classList.add("hidden");
 });
 
