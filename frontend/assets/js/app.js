@@ -143,6 +143,23 @@ riskFilter.addEventListener("change", displaySuspects);
 const crimeForm = document.getElementById("crime-form");
 const showCrimeFormButton = document.getElementById("show-crime-form");
 const cancelCrimeFormButton = document.getElementById("cancel-crime-form");
+const crimeTable = document.getElementById("crime-table");
+
+// This is temporary sample crime data until the database is connected.
+const crimes = [
+    {
+        id: 201,
+        type: "Burglary",
+        date: "2026-01-14",
+        location: "Manchester"
+    },
+    {
+        id: 202,
+        type: "Fraud",
+        date: "2026-02-03",
+        location: "London"
+    }
+];
 
 // Opens the form when the user wants to add a crime.
 showCrimeFormButton.addEventListener("click", function () {
@@ -154,6 +171,26 @@ cancelCrimeFormButton.addEventListener("click", function () {
     crimeForm.reset();
     crimeForm.classList.add("hidden");
 });
+
+// Goes through the crimes and adds each one to the table.
+function displayCrimes() {
+    crimeTable.innerHTML = "";
+
+    crimes.forEach(function (crime) {
+        const row = document.createElement("tr");
+        row.className = "border-b";
+
+        row.innerHTML = `
+            <td class="p-3">${crime.id}</td>
+            <td class="p-3">${crime.type}</td>
+            <td class="p-3">${crime.date}</td>
+            <td class="p-3">${crime.location}</td>
+            <td class="p-3">No actions yet</td>
+        `;
+
+        crimeTable.appendChild(row);
+    });
+}
 
 // Opens the form and fills it with the suspect's current details.
 function editSuspect(suspectId) {
@@ -285,3 +322,4 @@ suspectForm.addEventListener("submit", function (event) {
 
 // Displays the sample suspects when the page first loads.
 displaySuspects();
+displayCrimes();
