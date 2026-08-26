@@ -144,6 +144,10 @@ const crimeForm = document.getElementById("crime-form");
 const showCrimeFormButton = document.getElementById("show-crime-form");
 const cancelCrimeFormButton = document.getElementById("cancel-crime-form");
 const crimeTable = document.getElementById("crime-table");
+const crimeTypeInput = document.getElementById("crime-type");
+const crimeDateInput = document.getElementById("crime-date");
+const crimeLocationInput = document.getElementById("crime-location");
+const crimeFormError = document.getElementById("crime-form-error");
 
 // This is temporary sample crime data until the database is connected.
 const crimes = [
@@ -168,6 +172,7 @@ showCrimeFormButton.addEventListener("click", function () {
 
 // Closes and clears the form when the user cancels.
 cancelCrimeFormButton.addEventListener("click", function () {
+    crimeFormError.textContent = "";
     crimeForm.reset();
     crimeForm.classList.add("hidden");
 });
@@ -191,6 +196,73 @@ function displayCrimes() {
         crimeTable.appendChild(row);
     });
 }
+
+// Finds the next crime ID by adding one to the current highest ID.
+function getNextCrimeId() {
+    if (crimes.length === 0) {
+        return 201;
+    }
+
+    const currentIds = crimes.map(function (crime) {
+        return crime.id;
+    });
+
+    return Math.max(...currentIds) + 1;
+}
+
+// Checks the crime details before they are added to the array.
+function validateCrime(type, date, location) {
+    const today = new Date().toISOString().split("T")[0];
+
+    if (type === "") {
+        return "The crime type is required.";
+    }
+
+    if (date === "") {
+        return "The crime date is required.";
+    }
+
+    if (date > today) {
+        return "The crime date cannot be in the future.";
+    }
+
+    if (location === "") {
+        return "The location is required.";
+    }
+
+    return "";
+}
+
+// Adds the form values as a new crime in the temporary array.
+crimeForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const type = crimeTypeInput.value.trim();
+    const date = crimeDateInput.value;
+    const location = crimeLocationInput.value.trim();
+    const errorMessage = validateCrime(type, date, location);
+
+    // Stops the crime being added when the input is invalid.
+    if (errorMessage !== "") {
+        crimeFormError.textContent = errorMessage;
+        return;
+    }
+
+    const newCrime = {
+        id: getNextCrimeId(),
+        type: type,
+        date: date,
+        location: location
+    };
+
+    crimes.push(newCrime);
+    displayCrimes();
+
+    // Clears and closes the form after the crime has been added.
+    crimeFormError.textContent = "";
+    crimeForm.reset();
+    crimeForm.classList.add("hidden");
+});
 
 // Opens the form and fills it with the suspect's current details.
 function editSuspect(suspectId) {
