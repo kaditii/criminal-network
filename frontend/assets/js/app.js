@@ -73,6 +73,17 @@ const showRelationshipFormButton = document.getElementById("show-relationship-fo
 const cancelRelationshipFormButton = document.getElementById("cancel-relationship-form");
 const relationshipPersonOne = document.getElementById("relationship-person-one");
 const relationshipPersonTwo = document.getElementById("relationship-person-two");
+const relationshipTable = document.getElementById("relationship-table");
+
+// This is temporary relationship data until the database is connected.
+const relationships = [
+    {
+        id: 301,
+        personOneId: 1001,
+        personTwoId: 1002,
+        type: "Associate"
+    }
+];
 
 // Opens the form when the user wants to add a relationship.
 showRelationshipFormButton.addEventListener("click", function () {
@@ -102,6 +113,35 @@ function displayRelationshipSuspects() {
         personTwoOption.value = suspect.id;
         personTwoOption.textContent = suspect.name;
         relationshipPersonTwo.appendChild(personTwoOption);
+    });
+}
+
+// Finds a suspect name from the ID stored in a relationship.
+function getSuspectName(suspectId) {
+    const suspect = suspects.find(function (item) {
+        return item.id === suspectId;
+    });
+
+    return suspect ? suspect.name : "Unknown suspect";
+}
+
+// Goes through the relationships and adds each one to the table.
+function displayRelationships() {
+    relationshipTable.innerHTML = "";
+
+    relationships.forEach(function (relationship) {
+        const row = document.createElement("tr");
+        row.className = "border-b";
+
+        row.innerHTML = `
+            <td class="p-3">${relationship.id}</td>
+            <td class="p-3">${getSuspectName(relationship.personOneId)}</td>
+            <td class="p-3">${getSuspectName(relationship.personTwoId)}</td>
+            <td class="p-3">${relationship.type}</td>
+            <td class="p-3">No actions yet</td>
+        `;
+
+        relationshipTable.appendChild(row);
     });
 }
 
@@ -516,3 +556,4 @@ suspectForm.addEventListener("submit", function (event) {
 // Displays the sample suspects when the page first loads.
 displaySuspects();
 displayCrimes();
+displayRelationships();
