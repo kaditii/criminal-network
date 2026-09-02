@@ -148,6 +148,9 @@ const crimeTypeInput = document.getElementById("crime-type");
 const crimeDateInput = document.getElementById("crime-date");
 const crimeLocationInput = document.getElementById("crime-location");
 const crimeFormError = document.getElementById("crime-form-error");
+const crimeFormTitle = document.getElementById("crime-form-title");
+const saveCrimeButton = document.getElementById("save-crime");
+let editingCrimeId = null;
 
 // This is temporary sample crime data until the database is connected.
 const crimes = [
@@ -167,13 +170,13 @@ const crimes = [
 
 // Opens the form when the user wants to add a crime.
 showCrimeFormButton.addEventListener("click", function () {
+    resetCrimeForm();
     crimeForm.classList.remove("hidden");
 });
 
 // Closes and clears the form when the user cancels.
 cancelCrimeFormButton.addEventListener("click", function () {
-    crimeFormError.textContent = "";
-    crimeForm.reset();
+    resetCrimeForm();
     crimeForm.classList.add("hidden");
 });
 
@@ -190,10 +193,35 @@ function displayCrimes() {
             <td class="p-3">${crime.type}</td>
             <td class="p-3">${crime.date}</td>
             <td class="p-3">${crime.location}</td>
-            <td class="p-3">No actions yet</td>
+            <td class="p-3">
+                <button class="edit-crime mr-2 rounded bg-blue-700 px-3 py-1 text-white"
+                        data-id="${crime.id}">
+                    Edit
+                </button>
+                <button class="delete-crime rounded bg-red-700 px-3 py-1 text-white"
+                        data-id="${crime.id}">
+                    Delete
+                </button>
+            </td>
         `;
 
         crimeTable.appendChild(row);
+    });
+
+    // Adds a click event to each crime action button.
+    const editButtons = document.querySelectorAll(".edit-crime");
+    const deleteButtons = document.querySelectorAll(".delete-crime");
+
+    editButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            editCrime(Number(button.dataset.id));
+        });
+    });
+
+    deleteButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            deleteCrime(Number(button.dataset.id));
+        });
     });
 }
 
@@ -233,7 +261,7 @@ function validateCrime(type, date, location) {
     return "";
 }
 
-// Adds the form values as a new crime in the temporary array.
+// Adds a new crime or updates the crime being edited.
 crimeForm.addEventListener("submit", function (event) {
     event.preventDefault();
 
@@ -248,21 +276,74 @@ crimeForm.addEventListener("submit", function (event) {
         return;
     }
 
-    const newCrime = {
-        id: getNextCrimeId(),
-        type: type,
-        date: date,
-        location: location
-    };
+    if (editingCrimeId === null) {
+        const newCrime = {
+            id: getNextCrimeId(),
+            type: type,
+            date: date,
+            location: location
+        };
 
-    crimes.push(newCrime);
+        crimes.push(newCrime);
+    } else {
+        const crime = crimes.find(function (item) {
+            return item.id === editingCrimeId;
+        });
+
+        crime.type = type;
+        crime.date = date;
+        crime.location = location;
+    }
+
     displayCrimes();
 
-    // Clears and closes the form after the crime has been added.
-    crimeFormError.textContent = "";
-    crimeForm.reset();
+    // Clears and closes the form after saving the crime.
+    resetCrimeForm();
     crimeForm.classList.add("hidden");
 });
+
+// Opens the form and fills it with the crime's current details.
+function editCrime(crimeId) {
+    const crime = crimes.find(function (item) {
+        return item.id === crimeId;
+    });
+
+    editingCrimeId = crimeId;
+    crimeTypeInput.value = crime.type;
+    crimeDateInput.value = crime.date;
+    crimeLocationInput.value = crime.location;
+    crimeFormTitle.textContent = "Edit crime";
+    saveCrimeButton.textContent = "Update";
+    crimeFormError.textContent = "";
+    crimeForm.classList.remove("hidden");
+}
+
+// Returns the crime form to add mode.
+function resetCrimeForm() {
+    editingCrimeId = null;
+    crimeForm.reset();
+    crimeFormError.textContent = "";
+    crimeFormTitle.textContent = "New crime";
+    saveCrimeButton.textContent = "Save";
+}
+
+// Removes a crime after the user confirms it.
+function deleteCrime(crimeId) {
+    const crime = crimes.find(function (item) {
+        return item.id === crimeId;
+    });
+
+    const confirmed = confirm("Delete " + crime.type + "?");
+
+    if (confirmed) {
+        const crimePosition = crimes.findIndex(function (item) {
+            return item.id === crimeId;
+        });
+
+        crimes.splice(crimePosition, 1);
+        displayCrimes();
+    }
+}
 
 // Opens the form and fills it with the suspect's current details.
 function editSuspect(suspectId) {
