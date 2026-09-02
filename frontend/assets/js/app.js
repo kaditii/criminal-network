@@ -67,6 +67,44 @@ const suspects = [
 
 const suspectTable = document.getElementById("suspect-table");
 
+// Gets the relationship form and its two control buttons.
+const relationshipForm = document.getElementById("relationship-form");
+const showRelationshipFormButton = document.getElementById("show-relationship-form");
+const cancelRelationshipFormButton = document.getElementById("cancel-relationship-form");
+const relationshipPersonOne = document.getElementById("relationship-person-one");
+const relationshipPersonTwo = document.getElementById("relationship-person-two");
+
+// Opens the form when the user wants to add a relationship.
+showRelationshipFormButton.addEventListener("click", function () {
+    relationshipForm.classList.remove("hidden");
+});
+
+// Clears and closes the form when the user cancels.
+cancelRelationshipFormButton.addEventListener("click", function () {
+    relationshipForm.reset();
+    relationshipForm.classList.add("hidden");
+});
+
+// Adds the current suspects to both relationship dropdowns.
+function displayRelationshipSuspects() {
+    const firstOption = '<option value="">Choose a suspect</option>';
+
+    relationshipPersonOne.innerHTML = firstOption;
+    relationshipPersonTwo.innerHTML = firstOption;
+
+    suspects.forEach(function (suspect) {
+        const personOneOption = document.createElement("option");
+        personOneOption.value = suspect.id;
+        personOneOption.textContent = suspect.name;
+        relationshipPersonOne.appendChild(personOneOption);
+
+        const personTwoOption = document.createElement("option");
+        personTwoOption.value = suspect.id;
+        personTwoOption.textContent = suspect.name;
+        relationshipPersonTwo.appendChild(personTwoOption);
+    });
+}
+
 // Goes through the suspects and adds each one to the table.
 function displaySuspects() {
     suspectTable.innerHTML = "";
@@ -133,6 +171,8 @@ function displaySuspects() {
             deleteSuspect(Number(button.dataset.id));
         });
     });
+
+    displayRelationshipSuspects();
 }
 
 // Updates the table when the search or risk filter changes.
