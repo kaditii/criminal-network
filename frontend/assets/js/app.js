@@ -49,23 +49,32 @@ cancelSuspectFormButton.addEventListener("click", function () {
     suspectForm.classList.add("hidden");
 });
 
-// This is temporary sample data until the database is connected.
-const suspects = [
-    {
-        id: 1001,
-        name: "John Smith",
-        dateOfBirth: "1990-02-11",
-        riskLevel: 3
-    },
-    {
-        id: 1002,
-        name: "Sarah Jones",
-        dateOfBirth: "1985-07-22",
-        riskLevel: 5
-    }
-];
+// Stores the suspect records received from the backend.
+let suspects = [];
 
 const suspectTable = document.getElementById("suspect-table");
+
+// Gets the suspect records from the C# backend.
+async function loadSuspects() {
+    try {
+        const response = await fetch("http://127.0.0.1:5062/api/suspects");
+
+        if (!response.ok) {
+            throw new Error("Could not load suspects.");
+        }
+
+        suspects = await response.json();
+        displaySuspects();
+    } catch (error) {
+        suspectTable.innerHTML = `
+            <tr>
+                <td colspan="5" class="p-4 text-center text-red-700">
+                    Could not load suspects. Make sure the backend is running.
+                </td>
+            </tr>
+        `;
+    }
+}
 
 // Gets the relationship form and its two control buttons.
 const relationshipForm = document.getElementById("relationship-form");
@@ -553,7 +562,7 @@ suspectForm.addEventListener("submit", function (event) {
     suspectForm.classList.add("hidden");
 });
 
-// Displays the sample suspects when the page first loads.
-displaySuspects();
+// Loads the suspect records when the page first opens.
+loadSuspects();
 displayCrimes();
 displayRelationships();
