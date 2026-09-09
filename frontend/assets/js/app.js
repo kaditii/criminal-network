@@ -520,8 +520,8 @@ function validateSuspect(name, dateOfBirth, riskLevel, suspectId) {
     return "";
 }
 
-// Adds the form values as a new suspect in the temporary array.
-suspectForm.addEventListener("submit", function (event) {
+// Sends a new suspect to the backend when the form is submitted.
+suspectForm.addEventListener("submit", async function (event) {
     event.preventDefault();
 
     const name = suspectNameInput.value.trim();
@@ -536,14 +536,25 @@ suspectForm.addEventListener("submit", function (event) {
     }
 
     if (editingSuspectId === null) {
-        const newSuspect = {
-            id: getNextSuspectId(),
-            name: name,
-            dateOfBirth: dateOfBirth,
-            riskLevel: riskLevel
-        };
+        const response = await fetch("http://127.0.0.1:5062/api/suspects", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name: name,
+                dateOfBirth: dateOfBirth,
+                riskLevel: riskLevel
+            })
+        });
 
-        suspects.push(newSuspect);
+        if (!response.ok) {
+            const result = await response.json();
+            suspectFormError.textContent = result.message;
+            return;
+        }
+
+        await loadSuspects();
     } else {
         // Updates the existing suspect instead of adding another one.
         const suspect = suspects.find(function (item) {
@@ -555,7 +566,9 @@ suspectForm.addEventListener("submit", function (event) {
         suspect.riskLevel = riskLevel;
     }
 
-    displaySuspects();
+    if (editingSuspectId !== null) {
+        displaySuspects();
+    }
 
     // Clears and closes the form after the suspect has been added.
     resetSuspectForm();
