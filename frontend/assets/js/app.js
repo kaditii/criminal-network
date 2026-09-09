@@ -556,18 +556,28 @@ suspectForm.addEventListener("submit", async function (event) {
 
         await loadSuspects();
     } else {
-        // Updates the existing suspect instead of adding another one.
-        const suspect = suspects.find(function (item) {
-            return item.id === editingSuspectId;
-        });
+        const response = await fetch(
+            "http://127.0.0.1:5062/api/suspects/" + editingSuspectId,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: name,
+                    dateOfBirth: dateOfBirth,
+                    riskLevel: riskLevel
+                })
+            }
+        );
 
-        suspect.name = name;
-        suspect.dateOfBirth = dateOfBirth;
-        suspect.riskLevel = riskLevel;
-    }
+        if (!response.ok) {
+            const result = await response.json();
+            suspectFormError.textContent = result.message;
+            return;
+        }
 
-    if (editingSuspectId !== null) {
-        displaySuspects();
+        await loadSuspects();
     }
 
     // Clears and closes the form after the suspect has been added.
