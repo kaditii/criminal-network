@@ -72,6 +72,7 @@ async function loadSuspects() {
 
         suspects = await response.json();
         displaySuspects();
+        displayRelationships();
     } catch (error) {
         suspectTable.innerHTML = `
             <tr>
@@ -89,28 +90,49 @@ const showRelationshipFormButton = document.getElementById("show-relationship-fo
 const cancelRelationshipFormButton = document.getElementById("cancel-relationship-form");
 const relationshipPersonOne = document.getElementById("relationship-person-one");
 const relationshipPersonTwo = document.getElementById("relationship-person-two");
+const relationshipTypeInput = document.getElementById("relationship-type");
+const relationshipFormError = document.getElementById("relationship-form-error");
+const relationshipFormTitle = document.getElementById("relationship-form-title");
+const saveRelationshipButton = document.getElementById("save-relationship");
 const relationshipTable = document.getElementById("relationship-table");
+let editingRelationshipId = null;
 
-// This is temporary relationship data until the database is connected.
-const relationships = [
-    {
-        id: 301,
-        personOneId: 1001,
-        personTwoId: 1002,
-        type: "Associate"
-    }
-];
+// Stores the relationship records received from the backend.
+let relationships = [];
 
 // Opens the form when the user wants to add a relationship.
 showRelationshipFormButton.addEventListener("click", function () {
+    resetRelationshipForm();
     relationshipForm.classList.remove("hidden");
 });
 
 // Clears and closes the form when the user cancels.
 cancelRelationshipFormButton.addEventListener("click", function () {
-    relationshipForm.reset();
+    resetRelationshipForm();
     relationshipForm.classList.add("hidden");
 });
+
+// Gets the relationship records from the C# backend.
+async function loadRelationships() {
+    try {
+        const response = await fetch("http://127.0.0.1:5062/api/relationships");
+
+        if (!response.ok) {
+            throw new Error("Could not load relationships.");
+        }
+
+        relationships = await response.json();
+        displayRelationships();
+    } catch (error) {
+        relationshipTable.innerHTML = `
+            <tr>
+                <td colspan="5" class="p-4 text-center text-red-700">
+                    Could not load relationships. Make sure the backend is running.
+                </td>
+            </tr>
+        `;
+    }
+}
 
 // Adds the current suspects to both relationship dropdowns.
 function displayRelationshipSuspects() {
@@ -154,11 +176,122 @@ function displayRelationships() {
             <td class="p-3">${getSuspectName(relationship.personOneId)}</td>
             <td class="p-3">${getSuspectName(relationship.personTwoId)}</td>
             <td class="p-3">${relationship.type}</td>
-            <td class="p-3">No actions yet</td>
+            <td class="p-3">
+                <button class="edit-relationship mr-2 rounded bg-blue-700 px-3 py-1 text-white"
+                        data-id="${relationship.id}">
+                    Edit
+                </button>
+                <button class="delete-relationship rounded bg-red-700 px-3 py-1 text-white"
+                        data-id="${relationship.id}">
+                    Delete
+                </button>
+            </td>
         `;
 
         relationshipTable.appendChild(row);
     });
+
+    // Adds a click event to each relationship action button.
+    const editButtons = document.querySelectorAll(".edit-relationship");
+    const deleteButtons = document.querySelectorAll(".delete-relationship");
+
+    editButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            editRelationship(Number(button.dataset.id));
+        });
+    });
+
+    deleteButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            deleteRelationship(Number(button.dataset.id));
+        });
+    });
+}
+
+// Sends a new or updated relationship to the backend.
+relationshipForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const firstSuspectId = Number(relationshipPersonOne.value);
+    const secondSuspectId = Number(relationshipPersonTwo.value);
+    const type = relationshipTypeInput.value.trim();
+    const endpoint = editingRelationshipId === null
+        ? "http://127.0.0.1:5062/api/relationships"
+        : "http://127.0.0.1:5062/api/relationships/" + editingRelationshipId;
+    const method = editingRelationshipId === null ? "POST" : "PUT";
+
+    const response = await fetch(endpoint, {
+        method: method,
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            firstSuspectId: firstSuspectId,
+            secondSuspectId: secondSuspectId,
+            type: type
+        })
+    });
+
+    if (!response.ok) {
+        const result = await response.json();
+        relationshipFormError.textContent = result.message;
+        return;
+    }
+
+    await loadRelationships();
+    resetRelationshipForm();
+    relationshipForm.classList.add("hidden");
+});
+
+// Opens the form and fills it with the relationship's current details.
+function editRelationship(relationshipId) {
+    const relationship = relationships.find(function (item) {
+        return item.id === relationshipId;
+    });
+
+    editingRelationshipId = relationshipId;
+    relationshipPersonOne.value = relationship.firstSuspectId;
+    relationshipPersonTwo.value = relationship.secondSuspectId;
+    relationshipTypeInput.value = relationship.type;
+    relationshipFormTitle.textContent = "Edit relationship";
+    saveRelationshipButton.textContent = "Update";
+    relationshipFormError.textContent = "";
+    relationshipForm.classList.remove("hidden");
+}
+
+// Returns the relationship form to add mode.
+function resetRelationshipForm() {
+    editingRelationshipId = null;
+    relationshipForm.reset();
+    relationshipFormError.textContent = "";
+    relationshipFormTitle.textContent = "New relationship";
+    saveRelationshipButton.textContent = "Save";
+}
+
+// Removes a relationship from the database after the user confirms it.
+async function deleteRelationship(relationshipId) {
+    const relationship = relationships.find(function (item) {
+        return item.id === relationshipId;
+    });
+
+    const confirmed = confirm("Delete the relationship: " + relationship.type + "?");
+
+    if (confirmed) {
+        const response = await fetch(
+            "http://127.0.0.1:5062/api/relationships/" + relationshipId,
+            {
+                method: "DELETE"
+            }
+        );
+
+        if (!response.ok) {
+            const result = await response.json();
+            alert(result.message);
+            return;
+        }
+
+        await loadRelationships();
+    }
 }
 
 // Goes through the suspects and adds each one to the table.
@@ -629,4 +762,4 @@ suspectForm.addEventListener("submit", async function (event) {
 // Loads the suspect records when the page first opens.
 loadSuspects();
 loadCrimes();
-displayRelationships();
+loadRelationships();

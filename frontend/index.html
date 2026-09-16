@@ -170,7 +170,7 @@
             </div>
 
             <form id="relationship-form" class="mb-6 hidden rounded bg-white p-4 shadow">
-                <h3 class="mb-4 text-lg font-semibold">New relationship</h3>
+                <h3 id="relationship-form-title" class="mb-4 text-lg font-semibold">New relationship</h3>
                 <div class="grid gap-4 md:grid-cols-3">
                     <div>
                         <label for="relationship-person-one" class="mb-1 block">First person</label>
@@ -190,8 +190,11 @@
                                placeholder="For example: associate" class="w-full rounded border p-2">
                     </div>
                 </div>
+                <p id="relationship-form-error" class="mt-3 text-red-700"></p>
                 <div class="mt-4 flex gap-2">
-                    <button type="submit" class="rounded bg-red-700 px-4 py-2 text-white">Save</button>
+                    <button id="save-relationship" type="submit" class="rounded bg-red-700 px-4 py-2 text-white">
+                        Save
+                    </button>
                     <button id="cancel-relationship-form" type="button" class="rounded bg-gray-300 px-4 py-2">
                         Cancel
                     </button>
