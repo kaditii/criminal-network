@@ -16,6 +16,9 @@ function showPage(pageName) {
 
     const activeButton = document.querySelector(`[data-page="${pageName}"]`);
     activeButton.classList.add("bg-red-700", "text-white");
+
+    // Remembers the page so it can be reopened after a refresh.
+    sessionStorage.setItem("selectedPage", pageName);
 }
 
 navButtons.forEach(function (button) {
@@ -24,6 +27,10 @@ navButtons.forEach(function (button) {
         showPage(button.dataset.page);
     });
 });
+
+// Opens the last selected page, or Suspects when the site is first opened.
+const selectedPage = sessionStorage.getItem("selectedPage") || "suspects";
+showPage(selectedPage);
 
 // Gets the suspect form and its two control buttons.
 const suspectForm = document.getElementById("suspect-form");
