@@ -120,4 +120,29 @@ public class SuspectsController : ControllerBase
 
         return Ok(suspect);
     }
+
+    // Deletes a suspect when they are not part of a relationship.
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var suspect = await _database.Suspects.FindAsync(id);
+
+        if (suspect is null)
+        {
+            return NotFound(new { message = "The suspect could not be found." });
+        }
+
+        var hasRelationship = await _database.Relationships.AnyAsync(relationship =>
+            relationship.FirstSuspectId == id || relationship.SecondSuspectId == id);
+
+        if (hasRelationship)
+        {
+            return Conflict(new { message = "Remove this suspect's relationships before deleting them." });
+        }
+
+        _database.Suspects.Remove(suspect);
+        await _database.SaveChangesAsync();
+
+        return NoContent();
+    }
 }

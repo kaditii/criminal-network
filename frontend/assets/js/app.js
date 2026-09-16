@@ -459,8 +459,8 @@ function resetSuspectForm() {
     saveSuspectButton.textContent = "Save";
 }
 
-// Removes a suspect from the array after the user confirms it.
-function deleteSuspect(suspectId) {
+// Removes a suspect from the database after the user confirms it.
+async function deleteSuspect(suspectId) {
     const suspect = suspects.find(function (item) {
         return item.id === suspectId;
     });
@@ -468,12 +468,20 @@ function deleteSuspect(suspectId) {
     const confirmed = confirm("Delete " + suspect.name + "?");
 
     if (confirmed) {
-        const suspectPosition = suspects.findIndex(function (item) {
-            return item.id === suspectId;
-        });
+        const response = await fetch(
+            "http://127.0.0.1:5062/api/suspects/" + suspectId,
+            {
+                method: "DELETE"
+            }
+        );
 
-        suspects.splice(suspectPosition, 1);
-        displaySuspects();
+        if (!response.ok) {
+            const result = await response.json();
+            alert(result.message);
+            return;
+        }
+
+        await loadSuspects();
     }
 }
 
