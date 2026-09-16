@@ -323,19 +323,6 @@ function displayCrimes() {
     });
 }
 
-// Finds the next crime ID by adding one to the current highest ID.
-function getNextCrimeId() {
-    if (crimes.length === 0) {
-        return 201;
-    }
-
-    const currentIds = crimes.map(function (crime) {
-        return crime.id;
-    });
-
-    return Math.max(...currentIds) + 1;
-}
-
 // Checks the crime details before they are added to the array.
 function validateCrime(type, date, location) {
     const today = new Date().toISOString().split("T")[0];
@@ -359,8 +346,8 @@ function validateCrime(type, date, location) {
     return "";
 }
 
-// Adds a new crime or updates the crime being edited.
-crimeForm.addEventListener("submit", function (event) {
+// Sends a new or updated crime to the backend.
+crimeForm.addEventListener("submit", async function (event) {
     event.preventDefault();
 
     const type = crimeTypeInput.value.trim();
@@ -375,25 +362,47 @@ crimeForm.addEventListener("submit", function (event) {
     }
 
     if (editingCrimeId === null) {
-        const newCrime = {
-            id: getNextCrimeId(),
-            type: type,
-            date: date,
-            location: location
-        };
-
-        crimes.push(newCrime);
-    } else {
-        const crime = crimes.find(function (item) {
-            return item.id === editingCrimeId;
+        const response = await fetch("http://127.0.0.1:5062/api/crimes", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                type: type,
+                date: date,
+                location: location
+            })
         });
 
-        crime.type = type;
-        crime.date = date;
-        crime.location = location;
+        if (!response.ok) {
+            const result = await response.json();
+            crimeFormError.textContent = result.message;
+            return;
+        }
+    } else {
+        const response = await fetch(
+            "http://127.0.0.1:5062/api/crimes/" + editingCrimeId,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    type: type,
+                    date: date,
+                    location: location
+                })
+            }
+        );
+
+        if (!response.ok) {
+            const result = await response.json();
+            crimeFormError.textContent = result.message;
+            return;
+        }
     }
 
-    displayCrimes();
+    await loadCrimes();
 
     // Clears and closes the form after saving the crime.
     resetCrimeForm();
@@ -425,8 +434,8 @@ function resetCrimeForm() {
     saveCrimeButton.textContent = "Save";
 }
 
-// Removes a crime after the user confirms it.
-function deleteCrime(crimeId) {
+// Removes a crime from the database after the user confirms it.
+async function deleteCrime(crimeId) {
     const crime = crimes.find(function (item) {
         return item.id === crimeId;
     });
@@ -434,12 +443,20 @@ function deleteCrime(crimeId) {
     const confirmed = confirm("Delete " + crime.type + "?");
 
     if (confirmed) {
-        const crimePosition = crimes.findIndex(function (item) {
-            return item.id === crimeId;
-        });
+        const response = await fetch(
+            "http://127.0.0.1:5062/api/crimes/" + crimeId,
+            {
+                method: "DELETE"
+            }
+        );
 
-        crimes.splice(crimePosition, 1);
-        displayCrimes();
+        if (!response.ok) {
+            const result = await response.json();
+            alert(result.message);
+            return;
+        }
+
+        await loadCrimes();
     }
 }
 
