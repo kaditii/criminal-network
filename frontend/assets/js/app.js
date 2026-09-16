@@ -241,21 +241,30 @@ const crimeFormTitle = document.getElementById("crime-form-title");
 const saveCrimeButton = document.getElementById("save-crime");
 let editingCrimeId = null;
 
-// This is temporary sample crime data until the database is connected.
-const crimes = [
-    {
-        id: 201,
-        type: "Burglary",
-        date: "2026-01-14",
-        location: "Manchester"
-    },
-    {
-        id: 202,
-        type: "Fraud",
-        date: "2026-02-03",
-        location: "London"
+// Stores the crime records received from the backend.
+let crimes = [];
+
+// Gets the crime records from the C# backend.
+async function loadCrimes() {
+    try {
+        const response = await fetch("http://127.0.0.1:5062/api/crimes");
+
+        if (!response.ok) {
+            throw new Error("Could not load crimes.");
+        }
+
+        crimes = await response.json();
+        displayCrimes();
+    } catch (error) {
+        crimeTable.innerHTML = `
+            <tr>
+                <td colspan="5" class="p-4 text-center text-red-700">
+                    Could not load crimes. Make sure the backend is running.
+                </td>
+            </tr>
+        `;
     }
-];
+}
 
 // Opens the form when the user wants to add a crime.
 showCrimeFormButton.addEventListener("click", function () {
@@ -595,5 +604,5 @@ suspectForm.addEventListener("submit", async function (event) {
 
 // Loads the suspect records when the page first opens.
 loadSuspects();
-displayCrimes();
+loadCrimes();
 displayRelationships();
