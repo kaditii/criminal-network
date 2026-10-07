@@ -73,6 +73,7 @@ async function loadSuspects() {
         suspects = await response.json();
         displaySuspects();
         displayRelationships();
+        displayNetwork();
     } catch (error) {
         suspectTable.innerHTML = `
             <tr>
@@ -123,6 +124,7 @@ async function loadRelationships() {
 
         relationships = await response.json();
         displayRelationships();
+        displayNetwork();
     } catch (error) {
         relationshipTable.innerHTML = `
             <tr>
@@ -161,6 +163,103 @@ function getSuspectName(suspectId) {
     });
 
     return suspect ? suspect.name : "Unknown suspect";
+}
+
+// Draws the detective board using the suspects and relationships already loaded.
+function displayNetwork() {
+    const cards = document.getElementById("network-cards");
+    const lines = document.getElementById("network-lines");
+    const emptyMessage = document.getElementById("network-empty");
+
+    cards.innerHTML = "";
+    lines.innerHTML = "";
+    emptyMessage.classList.toggle("hidden", suspects.length !== 0);
+
+    if (suspects.length === 0) {
+        return;
+    }
+
+    const centreX = 500;
+    const centreY = 300;
+    const radiusX = suspects.length === 1 ? 0 : 330;
+    const radiusY = suspects.length === 1 ? 0 : 205;
+    const positions = new Map();
+
+    suspects.forEach(function (suspect, index) {
+        const angle = (Math.PI * 2 * index / suspects.length) - Math.PI / 2;
+        const x = centreX + Math.cos(angle) * radiusX;
+        const y = centreY + Math.sin(angle) * radiusY;
+        positions.set(suspect.id, { x: x, y: y });
+    });
+
+    // Strings are drawn first so the paper files sit on top of them.
+    relationships.forEach(function (relationship) {
+        const start = positions.get(relationship.firstSuspectId);
+        const end = positions.get(relationship.secondSuspectId);
+
+        if (!start || !end) {
+            return;
+        }
+
+        addNetworkLine(lines, start, end, "network-string-shadow");
+        addNetworkLine(lines, start, end, "network-string");
+
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", (start.x + end.x) / 2);
+        label.setAttribute("y", (start.y + end.y) / 2 - 12);
+        label.setAttribute("class", "network-link-label");
+        label.textContent = relationship.type;
+        lines.appendChild(label);
+    });
+
+    suspects.forEach(function (suspect, index) {
+        const position = positions.get(suspect.id);
+        const card = document.createElement("article");
+        const initials = suspect.name
+            .split(" ")
+            .filter(Boolean)
+            .slice(0, 2)
+            .map(function (part) { return part[0].toUpperCase(); })
+            .join("");
+
+        card.className = "suspect-card";
+        card.style.left = (position.x / 10) + "%";
+        card.style.top = (position.y / 6.2) + "%";
+        card.style.setProperty("--card-angle", ((index % 5) - 2) * 1.4 + "deg");
+
+        const photo = document.createElement("div");
+        photo.className = "suspect-photo";
+        photo.textContent = initials || "?";
+
+        const name = document.createElement("h3");
+        name.className = "suspect-name";
+        name.textContent = suspect.name;
+
+        const meta = document.createElement("div");
+        meta.className = "suspect-meta";
+
+        const id = document.createElement("span");
+        id.textContent = "SUBJECT #" + suspect.id;
+
+        const risk = document.createElement("span");
+        risk.className = "risk-mark";
+        risk.textContent = "RISK " + suspect.riskLevel + "/5";
+
+        meta.append(id, risk);
+        card.append(photo, name, meta);
+        cards.appendChild(card);
+    });
+}
+
+// Adds one SVG line between two suspect cards.
+function addNetworkLine(svg, start, end, className) {
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", start.x);
+    line.setAttribute("y1", start.y);
+    line.setAttribute("x2", end.x);
+    line.setAttribute("y2", end.y);
+    line.setAttribute("class", className);
+    svg.appendChild(line);
 }
 
 // Goes through the relationships and adds each one to the table.

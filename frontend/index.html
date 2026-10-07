@@ -224,8 +224,31 @@
         </section>
 
         <section id="network-page" class="page hidden">
-            <h2 class="text-2xl font-semibold">Network</h2>
-            <p class="mt-2 text-gray-600">The network graph will be shown here.</p>
+            <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+                <div>
+                    <p class="case-kicker">CASE FILE 07-B</p>
+                    <h2 class="case-title">Connection Board</h2>
+                    <p class="case-subtitle">Known persons and confirmed associations</p>
+                </div>
+                <div class="board-legend" aria-label="Network legend">
+                    <span><i class="legend-string"></i> Confirmed link</span>
+                    <span><i class="legend-pin"></i> Person of interest</span>
+                </div>
+            </div>
+
+            <div class="detective-board-frame">
+                <div id="network-board" class="detective-board" aria-label="Suspect relationship network">
+                    <svg id="network-lines" class="network-lines" viewBox="0 0 1000 620"
+                         preserveAspectRatio="none" aria-hidden="true"></svg>
+                    <div id="network-cards" class="network-cards"></div>
+                    <div id="network-empty" class="network-empty hidden">
+                        <span class="empty-pin"></span>
+                        <strong>No evidence pinned yet</strong>
+                        <small>Add suspects and relationships to build the case.</small>
+                    </div>
+                    <span class="board-stamp">CONFIDENTIAL</span>
+                </div>
+            </div>
         </section>
     </main>
 

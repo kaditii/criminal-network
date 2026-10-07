@@ -1,0 +1,225 @@
+/* Detective board */
+.case-kicker {
+    color: #9f251d;
+    font: 700 0.72rem/1.2 "Courier New", monospace;
+    letter-spacing: 0.2em;
+}
+
+.case-title {
+    color: #24201b;
+    font: 700 2rem/1.1 Georgia, serif;
+}
+
+.case-subtitle {
+    color: #6b6258;
+    font-family: "Courier New", monospace;
+    font-size: 0.8rem;
+}
+
+.board-legend {
+    display: flex;
+    gap: 1rem;
+    color: #544a40;
+    font: 700 0.7rem/1 "Courier New", monospace;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.board-legend span {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.legend-string {
+    width: 1.6rem;
+    border-top: 3px solid #a51f1f;
+    transform: rotate(-8deg);
+}
+
+.legend-pin,
+.empty-pin {
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ff8b78 0 12%, #b9291f 40%, #68110d 100%);
+    box-shadow: 0 2px 3px #0008;
+}
+
+.detective-board-frame {
+    overflow-x: auto;
+    padding: 0.85rem;
+    border: 10px solid #3e291c;
+    border-radius: 4px;
+    background: linear-gradient(135deg, #6a4932, #2c1c13 55%, #5a3b28);
+    box-shadow: 0 18px 35px #25180f45, inset 0 0 0 2px #9a6b48;
+}
+
+.detective-board {
+    position: relative;
+    min-width: 760px;
+    min-height: 620px;
+    overflow: hidden;
+    background-color: #a96f42;
+    background-image:
+        radial-gradient(circle at 15% 22%, #653e2726 0 1px, transparent 2px),
+        radial-gradient(circle at 72% 65%, #f0bd7c26 0 1px, transparent 2px),
+        radial-gradient(circle at 44% 81%, #57341f1f 0 1px, transparent 2px),
+        linear-gradient(115deg, transparent 49%, #6d41251a 50%, transparent 51%);
+    background-size: 17px 19px, 23px 29px, 31px 27px, 100% 100%;
+    box-shadow: inset 0 0 45px #3d241f55;
+}
+
+.network-lines,
+.network-cards {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.network-lines {
+    overflow: visible;
+}
+
+.network-string-shadow {
+    stroke: #2b0d0b66;
+    stroke-width: 8;
+}
+
+.network-string {
+    stroke: #a51f1f;
+    stroke-width: 4;
+    filter: drop-shadow(0 2px 1px #240b08aa);
+}
+
+.network-link-label {
+    fill: #32271d;
+    paint-order: stroke;
+    stroke: #dfbd87;
+    stroke-width: 8px;
+    stroke-linejoin: round;
+    font: 700 18px/1 "Courier New", monospace;
+    letter-spacing: 0.06em;
+    text-anchor: middle;
+    text-transform: uppercase;
+}
+
+.suspect-card {
+    position: absolute;
+    width: 174px;
+    padding: 0.7rem;
+    transform: translate(-50%, -50%) rotate(var(--card-angle));
+    border: 1px solid #c9b88f;
+    background: #eee4c9;
+    color: #29231d;
+    box-shadow: 2px 7px 12px #321d1280;
+    font-family: "Courier New", monospace;
+}
+
+.suspect-card::before {
+    content: "";
+    position: absolute;
+    top: -7px;
+    left: 50%;
+    width: 15px;
+    height: 15px;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ff8b78 0 10%, #b9291f 38%, #68110d 100%);
+    box-shadow: 0 3px 5px #0009;
+}
+
+.suspect-photo {
+    display: grid;
+    width: 100%;
+    height: 72px;
+    place-items: center;
+    border: 5px solid #f8f1df;
+    background:
+        linear-gradient(#352f2a22 1px, transparent 1px),
+        linear-gradient(90deg, #352f2a22 1px, transparent 1px),
+        #8f8878;
+    background-size: 12px 12px;
+    box-shadow: 0 1px 3px #32291e66;
+    color: #f2ead9;
+    font: 700 1.8rem/1 Georgia, serif;
+    filter: sepia(0.6);
+}
+
+.suspect-name {
+    margin-top: 0.65rem;
+    overflow: hidden;
+    font-weight: 700;
+    line-height: 1.1;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.suspect-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.45rem;
+    padding-top: 0.4rem;
+    border-top: 1px dashed #81745e;
+    color: #655b4e;
+    font-size: 0.66rem;
+}
+
+.risk-mark {
+    color: #9f251d;
+    font-weight: 700;
+}
+
+.board-stamp {
+    position: absolute;
+    right: 2rem;
+    bottom: 1.5rem;
+    transform: rotate(-8deg);
+    border: 4px double #7e1818aa;
+    padding: 0.25rem 0.55rem;
+    color: #7e1818aa;
+    font: 700 1.2rem/1 "Courier New", monospace;
+    letter-spacing: 0.12em;
+    pointer-events: none;
+}
+
+.network-empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: #3b2b20;
+    font-family: "Courier New", monospace;
+}
+
+.network-empty.hidden {
+    display: none;
+}
+
+.network-empty strong {
+    padding: 0.7rem 1rem;
+    transform: rotate(-2deg);
+    background: #e8d497;
+    box-shadow: 2px 4px 8px #2f1c1255;
+    text-transform: uppercase;
+}
+
+.network-empty small {
+    font-weight: 700;
+}
+
+@media (max-width: 640px) {
+    .case-title {
+        font-size: 1.6rem;
+    }
+
+    .board-legend {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
