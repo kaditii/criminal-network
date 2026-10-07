@@ -173,8 +173,8 @@ function displayRelationships() {
 
         row.innerHTML = `
             <td class="p-3">${relationship.id}</td>
-            <td class="p-3">${getSuspectName(relationship.personOneId)}</td>
-            <td class="p-3">${getSuspectName(relationship.personTwoId)}</td>
+            <td class="p-3">${getSuspectName(relationship.firstSuspectId)}</td>
+            <td class="p-3">${getSuspectName(relationship.secondSuspectId)}</td>
             <td class="p-3">${relationship.type}</td>
             <td class="p-3">
                 <button class="edit-relationship mr-2 rounded bg-blue-700 px-3 py-1 text-white"
