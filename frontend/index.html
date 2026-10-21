@@ -249,6 +249,54 @@
                     <span class="board-stamp">CONFIDENTIAL</span>
                 </div>
             </div>
+
+            <dialog id="suspect-report-modal" class="report-modal">
+                <div class="report-folder">
+                    <div class="report-tab">PERSON OF INTEREST</div>
+                    <button id="close-suspect-report" class="report-close" type="button"
+                            aria-label="Close suspect report">&times;</button>
+
+                    <header class="report-header">
+                        <div id="report-initials" class="report-photo">?</div>
+                        <div>
+                            <p class="report-classification">CONFIDENTIAL // ACTIVE CASE</p>
+                            <h3 id="report-name">Unknown suspect</h3>
+                            <p id="report-id" class="report-file-number">SUBJECT #0000</p>
+                        </div>
+                    </header>
+
+                    <div class="report-grid">
+                        <section class="report-facts">
+                            <h4>Subject details</h4>
+                            <dl>
+                                <div><dt>Date of birth</dt><dd id="report-dob">—</dd></div>
+                                <div><dt>Risk assessment</dt><dd id="report-risk">—</dd></div>
+                                <div><dt>Known connections</dt><dd id="report-connection-count">0</dd></div>
+                            </dl>
+                        </section>
+
+                        <section class="report-notes">
+                            <h4>Investigator's summary</h4>
+                            <p id="report-summary"></p>
+                        </section>
+                    </div>
+
+                    <section class="report-section">
+                        <h4>Known associates &amp; activity</h4>
+                        <ul id="report-connections" class="report-list"></ul>
+                    </section>
+
+                    <section class="report-section report-offences">
+                        <h4>Recorded offences</h4>
+                        <p>No offences are linked to this suspect in the current data.</p>
+                    </section>
+
+                    <footer class="report-footer">
+                        <span>CRIMINAL NETWORK ANALYSIS UNIT</span>
+                        <span class="report-stamp">RESTRICTED</span>
+                    </footer>
+                </div>
+            </dialog>
         </section>
     </main>
 

@@ -223,6 +223,9 @@ function displayNetwork() {
             .join("");
 
         card.className = "suspect-card";
+        card.tabIndex = 0;
+        card.setAttribute("role", "button");
+        card.setAttribute("aria-label", "Open report for " + suspect.name);
         card.style.left = (position.x / 10) + "%";
         card.style.top = (position.y / 6.2) + "%";
         card.style.setProperty("--card-angle", ((index % 5) - 2) * 1.4 + "deg");
@@ -247,9 +250,101 @@ function displayNetwork() {
 
         meta.append(id, risk);
         card.append(photo, name, meta);
+        card.addEventListener("click", function () {
+            openSuspectReport(suspect.id);
+        });
+        card.addEventListener("keydown", function (event) {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                openSuspectReport(suspect.id);
+            }
+        });
         cards.appendChild(card);
     });
 }
+
+// Opens a case report for the selected suspect.
+function openSuspectReport(suspectId) {
+    const suspect = suspects.find(function (item) {
+        return item.id === suspectId;
+    });
+
+    if (!suspect) {
+        return;
+    }
+
+    const suspectRelationships = relationships.filter(function (relationship) {
+        return relationship.firstSuspectId === suspectId
+            || relationship.secondSuspectId === suspectId;
+    });
+    const initials = suspect.name
+        .split(" ")
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(function (part) { return part[0].toUpperCase(); })
+        .join("");
+
+    document.getElementById("report-initials").textContent = initials || "?";
+    document.getElementById("report-name").textContent = suspect.name;
+    document.getElementById("report-id").textContent = "SUBJECT #" + suspect.id;
+    document.getElementById("report-dob").textContent = suspect.dateOfBirth;
+    document.getElementById("report-risk").textContent = suspect.riskLevel + " / 5";
+    document.getElementById("report-connection-count").textContent = suspectRelationships.length;
+    document.getElementById("report-summary").textContent = buildSuspectSummary(
+        suspect,
+        suspectRelationships.length
+    );
+
+    const connectionList = document.getElementById("report-connections");
+    connectionList.innerHTML = "";
+
+    if (suspectRelationships.length === 0) {
+        const item = document.createElement("li");
+        item.className = "report-none";
+        item.textContent = "No confirmed associates in the current case file.";
+        connectionList.appendChild(item);
+    } else {
+        suspectRelationships.forEach(function (relationship) {
+            const associateId = relationship.firstSuspectId === suspectId
+                ? relationship.secondSuspectId
+                : relationship.firstSuspectId;
+            const item = document.createElement("li");
+            item.textContent = relationship.type + " — linked to " + getSuspectName(associateId);
+            connectionList.appendChild(item);
+        });
+    }
+
+    document.getElementById("suspect-report-modal").showModal();
+}
+
+// Creates a short summary from facts available in the frontend.
+function buildSuspectSummary(suspect, connectionCount) {
+    const riskDescription = suspect.riskLevel >= 4
+        ? "high-priority"
+        : suspect.riskLevel >= 3
+            ? "moderate-risk"
+            : "lower-risk";
+    const connectionText = connectionCount === 1
+        ? "one confirmed connection"
+        : connectionCount + " confirmed connections";
+
+    return suspect.name + " is classified as a " + riskDescription
+        + " person of interest with " + connectionText + " in this network.";
+}
+
+const suspectReportModal = document.getElementById("suspect-report-modal");
+const closeSuspectReportButton = document.getElementById("close-suspect-report");
+
+closeSuspectReportButton.addEventListener("click", function () {
+    suspectReportModal.close();
+});
+
+// Clicking the dark backdrop closes the report without treating clicks inside as close actions.
+suspectReportModal.addEventListener("click", function (event) {
+    if (event.target === suspectReportModal) {
+        suspectReportModal.close();
+    }
+});
 
 // Adds one SVG line between two suspect cards.
 function addNetworkLine(svg, start, end, className) {
