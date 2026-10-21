@@ -8,38 +8,48 @@
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body class="bg-gray-100 text-gray-900">
-    <header class="bg-gray-900 p-4 text-white">
-        <h1 class="text-xl font-bold">Criminal Network Analysis System</h1>
+    <header class="site-header bg-gray-900 p-4 text-white">
+        <div class="agency-seal" aria-hidden="true">CNA<br><span>07</span></div>
+        <div>
+            <p class="agency-label">Investigation bureau / intelligence division</p>
+            <h1 class="text-xl font-bold">Criminal Network Analysis</h1>
+            <p class="agency-subtitle">Follow the evidence. Connect the case.</p>
+        </div>
+        <span class="access-stamp">Restricted access</span>
     </header>
 
     <nav class="bg-white p-3 shadow">
         <div class="mx-auto flex max-w-5xl gap-3">
             <button class="nav-button rounded bg-red-700 px-3 py-2 text-white" data-page="suspects">
-                Suspects
+                01 / Suspects
             </button>
             <button class="nav-button rounded px-3 py-2" data-page="crimes">
-                Crimes
+                02 / Crimes
             </button>
             <button class="nav-button rounded px-3 py-2" data-page="relationships">
-                Relationships
+                03 / Relationships
             </button>
             <button class="nav-button rounded px-3 py-2" data-page="network">
-                Network
+                04 / Connection board
             </button>
         </div>
     </nav>
 
     <main class="mx-auto max-w-5xl p-6">
+        <div class="case-desk-heading">
+            <span>Investigation workspace</span>
+            <span class="desk-classification">Confidential / case records</span>
+        </div>
         <section id="suspects-page" class="page">
             <div class="mb-4 flex items-center justify-between">
-                <h2 class="text-2xl font-semibold">Suspects</h2>
+                <h2 class="text-2xl font-semibold">Suspect dossiers</h2>
                 <button id="show-suspect-form" class="rounded bg-red-700 px-4 py-2 text-white">
                     Add suspect
                 </button>
             </div>
 
             <div class="mb-4 grid gap-3 md:grid-cols-2">
-                <input id="suspect-search" type="search" placeholder="Search by name"
+                <input id="suspect-search" type="search" placeholder="Search suspect dossiers by name..." aria-label="Search suspects by name"
                        class="rounded border bg-white p-2">
                 <select id="risk-filter" class="rounded border bg-white p-2">
                     <option value="">All risk levels</option>
@@ -112,7 +122,7 @@
 
         <section id="crimes-page" class="page hidden">
             <div class="mb-4 flex items-center justify-between">
-                <h2 class="text-2xl font-semibold">Crimes</h2>
+                <h2 class="text-2xl font-semibold">Incident register</h2>
                 <button id="show-crime-form" class="rounded bg-red-700 px-4 py-2 text-white">
                     Add crime
                 </button>
@@ -163,7 +173,7 @@
 
         <section id="relationships-page" class="page hidden">
             <div class="mb-4 flex items-center justify-between">
-                <h2 class="text-2xl font-semibold">Relationships</h2>
+                <h2 class="text-2xl font-semibold">Association records</h2>
                 <button id="show-relationship-form" class="rounded bg-red-700 px-4 py-2 text-white">
                     Add relationship
                 </button>
@@ -298,6 +308,7 @@
                 </div>
             </dialog>
         </section>
+        <footer class="desk-footer"><span>Criminal Network Analysis Unit</span><span>End of file / authorised personnel only</span></footer>
     </main>
 
     <script src="assets/js/app.js"></script>
