@@ -14,9 +14,11 @@ public class AppDbContext : DbContext
     public DbSet<Crime> Crimes => Set<Crime>();
     public DbSet<Relationship> Relationships => Set<Relationship>();
     public DbSet<CrimeSuspect> CrimeSuspects => Set<CrimeSuspect>();
+    public DbSet<Detective> Detectives => Set<Detective>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Detective>().HasIndex(d => d.NormalizedUsername).IsUnique();
         modelBuilder.Entity<Suspect>().ToTable("Suspects");
         modelBuilder.Entity<Crime>().ToTable("Crimes");
         modelBuilder.Entity<Relationship>().ToTable("Relationships");

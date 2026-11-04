@@ -17,8 +17,6 @@ function showPage(pageName) {
     const activeButton = document.querySelector(`[data-page="${pageName}"]`);
     activeButton.classList.add("bg-red-700", "text-white");
 
-    // Remembers the page so it can be reopened after a refresh.
-    sessionStorage.setItem("selectedPage", pageName);
 }
 
 navButtons.forEach(function (button) {
@@ -28,9 +26,8 @@ navButtons.forEach(function (button) {
     });
 });
 
-// Opens the last selected page, or Suspects when the site is first opened.
-const selectedPage = sessionStorage.getItem("selectedPage") || "suspects";
-showPage(selectedPage);
+// Always open Suspect dossiers first.
+showPage("suspects");
 
 // Gets the suspect form and its two control buttons.
 const suspectForm = document.getElementById("suspect-form");
@@ -64,7 +61,7 @@ const suspectTable = document.getElementById("suspect-table");
 // Gets the suspect records from the C# backend.
 async function loadSuspects() {
     try {
-        const response = await fetch("http://127.0.0.1:5062/api/suspects");
+        const response = await apiFetch("/api/suspects");
 
         if (!response.ok) {
             throw new Error("Could not load suspects.");
@@ -116,7 +113,7 @@ cancelRelationshipFormButton.addEventListener("click", function () {
 // Gets the relationship records from the C# backend.
 async function loadRelationships() {
     try {
-        const response = await fetch("http://127.0.0.1:5062/api/relationships");
+        const response = await apiFetch("/api/relationships");
 
         if (!response.ok) {
             throw new Error("Could not load relationships.");
@@ -410,11 +407,11 @@ relationshipForm.addEventListener("submit", async function (event) {
     const secondSuspectId = Number(relationshipPersonTwo.value);
     const type = relationshipTypeInput.value.trim();
     const endpoint = editingRelationshipId === null
-        ? "http://127.0.0.1:5062/api/relationships"
-        : "http://127.0.0.1:5062/api/relationships/" + editingRelationshipId;
+        ? "/api/relationships"
+        : "/api/relationships/" + editingRelationshipId;
     const method = editingRelationshipId === null ? "POST" : "PUT";
 
-    const response = await fetch(endpoint, {
+    const response = await apiFetch(endpoint, {
         method: method,
         headers: {
             "Content-Type": "application/json"
@@ -471,8 +468,8 @@ async function deleteRelationship(relationshipId) {
     const confirmed = confirm("Delete the relationship: " + relationship.type + "?");
 
     if (confirmed) {
-        const response = await fetch(
-            "http://127.0.0.1:5062/api/relationships/" + relationshipId,
+        const response = await apiFetch(
+            "/api/relationships/" + relationshipId,
             {
                 method: "DELETE"
             }
@@ -581,7 +578,7 @@ let crimes = [];
 // Gets the crime records from the C# backend.
 async function loadCrimes() {
     try {
-        const response = await fetch("http://127.0.0.1:5062/api/crimes");
+        const response = await apiFetch("/api/crimes");
 
         if (!response.ok) {
             throw new Error("Could not load crimes.");
@@ -696,7 +693,7 @@ crimeForm.addEventListener("submit", async function (event) {
     }
 
     if (editingCrimeId === null) {
-        const response = await fetch("http://127.0.0.1:5062/api/crimes", {
+        const response = await apiFetch("/api/crimes", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -714,8 +711,8 @@ crimeForm.addEventListener("submit", async function (event) {
             return;
         }
     } else {
-        const response = await fetch(
-            "http://127.0.0.1:5062/api/crimes/" + editingCrimeId,
+        const response = await apiFetch(
+            "/api/crimes/" + editingCrimeId,
             {
                 method: "PUT",
                 headers: {
@@ -777,8 +774,8 @@ async function deleteCrime(crimeId) {
     const confirmed = confirm("Delete " + crime.type + "?");
 
     if (confirmed) {
-        const response = await fetch(
-            "http://127.0.0.1:5062/api/crimes/" + crimeId,
+        const response = await apiFetch(
+            "/api/crimes/" + crimeId,
             {
                 method: "DELETE"
             }
@@ -828,8 +825,8 @@ async function deleteSuspect(suspectId) {
     const confirmed = confirm("Delete " + suspect.name + "?");
 
     if (confirmed) {
-        const response = await fetch(
-            "http://127.0.0.1:5062/api/suspects/" + suspectId,
+        const response = await apiFetch(
+            "/api/suspects/" + suspectId,
             {
                 method: "DELETE"
             }
@@ -904,7 +901,7 @@ suspectForm.addEventListener("submit", async function (event) {
     }
 
     if (editingSuspectId === null) {
-        const response = await fetch("http://127.0.0.1:5062/api/suspects", {
+        const response = await apiFetch("/api/suspects", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -924,8 +921,8 @@ suspectForm.addEventListener("submit", async function (event) {
 
         await loadSuspects();
     } else {
-        const response = await fetch(
-            "http://127.0.0.1:5062/api/suspects/" + editingSuspectId,
+        const response = await apiFetch(
+            "/api/suspects/" + editingSuspectId,
             {
                 method: "PUT",
                 headers: {
@@ -953,7 +950,36 @@ suspectForm.addEventListener("submit", async function (event) {
     suspectForm.classList.add("hidden");
 });
 
-// Loads the suspect records when the page first opens.
-loadSuspects();
-loadCrimes();
-loadRelationships();
+// Check the server session before showing case records or loading any data.
+async function startWorkspace() {
+    const status = document.getElementById("session-status");
+    try {
+        const response = await apiFetch("/api/auth/me");
+        if (response.status === 401) {
+            window.location.replace("login.html");
+            return;
+        }
+        if (!response.ok) throw new Error("Session check failed.");
+        const detective = await response.json();
+        status.textContent = "Signed in: Detective " + detective.username;
+        document.getElementById("logout-button").hidden = false;
+        document.body.classList.remove("session-pending");
+        loadSuspects();
+        loadCrimes();
+        loadRelationships();
+    } catch (error) {
+        status.textContent = "Could not reach the backend. Start the server and reload this page.";
+    }
+}
+
+document.getElementById("logout-button").addEventListener("click", async function () {
+    try {
+        const response = await apiFetch("/api/auth/logout", { method: "POST" });
+        if (!response.ok && response.status !== 401) throw new Error("Logout failed.");
+        window.location.replace("login.html");
+    } catch (error) {
+        document.getElementById("session-status").textContent = "Could not log out. Check the server and try again.";
+    }
+});
+
+startWorkspace();

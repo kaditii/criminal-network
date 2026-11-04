@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
-<body class="bg-gray-100 text-gray-900">
+<body class="bg-gray-100 text-gray-900 session-pending">
     <header class="site-header bg-gray-900 p-4 text-white">
         <div class="agency-seal" aria-hidden="true">CNA<br><span>07</span></div>
         <div>
@@ -18,6 +18,10 @@
         <span class="access-stamp">Restricted access</span>
     </header>
 
+    <div class="detective-session">
+        <p id="session-status" role="status">Checking your session...</p>
+        <button id="logout-button" type="button" hidden>Log out</button>
+    </div>
     <nav class="bg-white p-3 shadow">
         <div class="mx-auto flex max-w-5xl gap-3">
             <button class="nav-button rounded bg-red-700 px-3 py-2 text-white" data-page="suspects">
@@ -311,6 +315,7 @@
         <footer class="desk-footer"><span>Criminal Network Analysis Unit</span><span>End of file / authorised personnel only</span></footer>
     </main>
 
+    <script src="assets/js/api.js"></script>
     <script src="assets/js/app.js"></script>
 </body>
 </html>

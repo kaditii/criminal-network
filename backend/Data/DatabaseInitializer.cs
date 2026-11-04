@@ -1,10 +1,26 @@
 using CriminalNetwork.Api.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CriminalNetwork.Api.Data;
 
 // Adds the same starter records currently shown by the frontend.
 public static class DatabaseInitializer
 {
+    // EnsureCreated cannot add tables to an existing database. This repeatable
+    // schema upgrade adds accounts without replacing any case records.
+    public static void AddDetectiveTable(AppDbContext database)
+    {
+        database.Database.ExecuteSqlRaw("""
+            CREATE TABLE IF NOT EXISTS Detectives (
+                Id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                Username TEXT NOT NULL,
+                NormalizedUsername TEXT NOT NULL,
+                PasswordHash TEXT NOT NULL);
+            CREATE UNIQUE INDEX IF NOT EXISTS IX_Detectives_NormalizedUsername
+                ON Detectives (NormalizedUsername);
+            """);
+    }
+
     public static void Seed(AppDbContext database)
     {
         if (!database.Suspects.Any())

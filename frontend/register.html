@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register detective | Criminal Network Analysis</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="login-page">
+    <main class="login-folder">
+        <p class="login-tab">Investigation bureau</p>
+        <header>
+            <div class="agency-seal" aria-hidden="true">CNA<br><span>07</span></div>
+            <p class="agency-label">Detective access / personnel file</p>
+            <h1 id="auth-title">Register detective</h1>
+            <p id="auth-description">Create your account to access the investigation workspace.</p>
+        </header>
+        <form id="auth-form" data-action="register">
+            <label for="auth-username">Detective username</label>
+            <input id="auth-username" name="username" autocomplete="username" required
+                   minlength="3" maxlength="30" pattern="[a-zA-Z0-9_-]{3,30}"
+                   aria-describedby="username-help" autocapitalize="none" spellcheck="false">
+            <small id="username-help">3–30 letters, numbers, underscores or hyphens.</small>
+            <label for="auth-password">Password</label>
+            <input id="auth-password" name="password" type="password" autocomplete="new-password"
+                   required minlength="10" maxlength="128" aria-describedby="password-help">
+            <small id="password-help">Use 10–128 characters. A long passphrase works well.</small>
+            <label for="auth-confirm-password">Confirm password</label>
+            <input id="auth-confirm-password" name="confirmPassword" type="password"
+                   autocomplete="new-password" required minlength="10" maxlength="128">
+            <p id="auth-message" role="status" aria-live="polite"></p>
+            <button id="auth-submit" type="submit">Create detective account</button>
+        </form>
+        <p id="auth-switch-description">Already registered?</p>
+        <a class="auth-switch" href="login.html">Back to sign in</a>
+        <footer>Criminal Network Analysis Unit / personnel access</footer>
+    </main>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth.js"></script>
+</body>
+</html>
