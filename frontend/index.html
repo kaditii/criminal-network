@@ -312,6 +312,26 @@
                 </div>
             </dialog>
         </section>
+        <dialog id="crime-report-modal" class="report-modal" aria-labelledby="crime-report-title">
+            <div class="report-folder">
+                <button id="close-crime-report" class="report-close" type="button"
+                        aria-label="Close crime report">&times;</button>
+                <p class="report-classification">CONFIDENTIAL // INCIDENT RECORD</p>
+                <h3 id="crime-report-title" class="text-2xl font-semibold"></h3>
+                <p id="crime-report-id" class="report-file-number"></p>
+                <section class="report-facts report-section">
+                    <h4>Crime details</h4>
+                    <dl>
+                        <div><dt>Date</dt><dd id="crime-report-date"></dd></div>
+                        <div><dt>Location</dt><dd id="crime-report-location"></dd></div>
+                    </dl>
+                </section>
+                <footer class="report-footer">
+                    <span>CRIMINAL NETWORK ANALYSIS UNIT</span>
+                    <span class="report-stamp">RESTRICTED</span>
+                </footer>
+            </div>
+        </dialog>
         <footer class="desk-footer"><span>Criminal Network Analysis Unit</span><span>End of file / authorised personnel only</span></footer>
     </main>
 

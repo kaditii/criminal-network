@@ -623,6 +623,10 @@ function displayCrimes() {
             <td class="p-3">${crime.date}</td>
             <td class="p-3">${crime.location}</td>
             <td class="p-3">
+                <button type="button" class="view-crime mr-2 rounded bg-blue-700 px-3 py-1 text-white"
+                        data-id="${crime.id}">
+                    View
+                </button>
                 <button class="edit-crime mr-2 rounded bg-blue-700 px-3 py-1 text-white"
                         data-id="${crime.id}">
                     Edit
@@ -638,6 +642,11 @@ function displayCrimes() {
     });
 
     // Adds a click event to each crime action button.
+    document.querySelectorAll(".view-crime").forEach(function (button) {
+        button.addEventListener("click", function () {
+            viewCrime(Number(button.dataset.id));
+        });
+    });
     const editButtons = document.querySelectorAll(".edit-crime");
     const deleteButtons = document.querySelectorAll(".delete-crime");
 
@@ -653,6 +662,28 @@ function displayCrimes() {
         });
     });
 }
+
+// Shows the selected record without opening the edit form.
+function viewCrime(crimeId) {
+    const crime = crimes.find(function (item) {
+        return item.id === crimeId;
+    });
+    if (!crime) return;
+
+    document.getElementById("crime-report-title").textContent = crime.type;
+    document.getElementById("crime-report-id").textContent = "INCIDENT #" + crime.id;
+    document.getElementById("crime-report-date").textContent = crime.date;
+    document.getElementById("crime-report-location").textContent = crime.location;
+    document.getElementById("crime-report-modal").showModal();
+}
+
+const crimeReportModal = document.getElementById("crime-report-modal");
+document.getElementById("close-crime-report").addEventListener("click", function () {
+    crimeReportModal.close();
+});
+crimeReportModal.addEventListener("click", function (event) {
+    if (event.target === crimeReportModal) crimeReportModal.close();
+});
 
 // Checks the crime details before they are added to the array.
 function validateCrime(type, date, location) {
