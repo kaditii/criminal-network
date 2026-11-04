@@ -140,6 +140,9 @@ public class SuspectsController : ControllerBase
             return Conflict(new { message = "Remove this suspect's relationships before deleting them." });
         }
 
+        if (await _database.CrimeSuspects.AnyAsync(link => link.SuspectId == id))
+            return Conflict(new { message = "Unlink this suspect from their crimes before deleting them." });
+
         _database.Suspects.Remove(suspect);
         await _database.SaveChangesAsync();
 

@@ -68,6 +68,7 @@ async function loadSuspects() {
         }
 
         suspects = await response.json();
+        displayCrimeSuspects();
         displaySuspects();
         displayRelationships();
         displayNetwork();
@@ -311,6 +312,25 @@ function openSuspectReport(suspectId) {
         });
     }
 
+    const offences = document.getElementById("report-offences");
+    offences.innerHTML = "";
+    const linkedCrimes = crimes.filter(function (crime) {
+        return (crime.suspectIds || []).includes(suspectId);
+    });
+    if (linkedCrimes.length === 0) {
+        offences.textContent = "No offences are linked to this suspect in the current data.";
+    }
+    linkedCrimes.forEach(function (crime) {
+        const section = document.createElement("section");
+        section.className = "report-section";
+        const heading = document.createElement("h4");
+        heading.textContent = crime.type + " (#" + crime.id + ")";
+        const details = document.createElement("p");
+        details.textContent = crime.date + " / " + crime.location;
+        section.append(heading, details);
+        appendCaseInformation(section, crime);
+        offences.appendChild(section);
+    });
     document.getElementById("suspect-report-modal").showModal();
 }
 
@@ -567,6 +587,8 @@ const crimeTable = document.getElementById("crime-table");
 const crimeTypeInput = document.getElementById("crime-type");
 const crimeDateInput = document.getElementById("crime-date");
 const crimeLocationInput = document.getElementById("crime-location");
+const crimeWitnessesInput = document.getElementById("crime-witnesses");
+const crimeStatementsInput = document.getElementById("crime-statements");
 const crimeFormError = document.getElementById("crime-form-error");
 const crimeFormTitle = document.getElementById("crime-form-title");
 const saveCrimeButton = document.getElementById("save-crime");
@@ -574,6 +596,42 @@ let editingCrimeId = null;
 
 // Stores the crime records received from the backend.
 let crimes = [];
+
+// Checkboxes link real suspect IDs instead of storing names that might change.
+function displayCrimeSuspects(selectedIds) {
+    const container = document.getElementById("crime-suspects");
+    if (!selectedIds) {
+        selectedIds = Array.from(container.querySelectorAll("input:checked"), input => Number(input.value));
+    }
+    container.innerHTML = "";
+    if (suspects.length === 0) container.textContent = "Add a suspect first to link them to a crime.";
+    suspects.forEach(function (suspect) {
+        const label = document.createElement("label");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = suspect.id;
+        checkbox.checked = selectedIds.includes(suspect.id);
+        label.append(checkbox, document.createTextNode(" " + suspect.name));
+        container.appendChild(label);
+    });
+}
+
+// Both crime reports and the connection board use the same case fields.
+function appendCaseInformation(container, crime) {
+    const fields = [
+        ["Witnesses", crime.witnesses || "None recorded."],
+        ["Suspects", (crime.suspectIds || []).map(getSuspectName).join(", ") || "None linked."],
+        ["Statements / extra information", crime.statements || "None recorded."]
+    ];
+    fields.forEach(function (field) {
+        const paragraph = document.createElement("p");
+        paragraph.className = "case-information";
+        const label = document.createElement("strong");
+        label.textContent = field[0] + ": ";
+        paragraph.append(label, document.createTextNode(field[1]));
+        container.appendChild(paragraph);
+    });
+}
 
 // Gets the crime records from the C# backend.
 async function loadCrimes() {
@@ -674,6 +732,9 @@ function viewCrime(crimeId) {
     document.getElementById("crime-report-id").textContent = "INCIDENT #" + crime.id;
     document.getElementById("crime-report-date").textContent = crime.date;
     document.getElementById("crime-report-location").textContent = crime.location;
+    const extra = document.getElementById("crime-report-extra");
+    extra.innerHTML = "";
+    appendCaseInformation(extra, crime);
     document.getElementById("crime-report-modal").showModal();
 }
 
@@ -715,6 +776,9 @@ crimeForm.addEventListener("submit", async function (event) {
     const type = crimeTypeInput.value.trim();
     const date = crimeDateInput.value;
     const location = crimeLocationInput.value.trim();
+    const witnesses = crimeWitnessesInput.value.trim();
+    const statements = crimeStatementsInput.value.trim();
+    const suspectIds = Array.from(document.querySelectorAll("#crime-suspects input:checked"), input => Number(input.value));
     const errorMessage = validateCrime(type, date, location);
 
     // Stops the crime being added when the input is invalid.
@@ -732,7 +796,10 @@ crimeForm.addEventListener("submit", async function (event) {
             body: JSON.stringify({
                 type: type,
                 date: date,
-                location: location
+                location: location,
+                witnesses: witnesses,
+                statements: statements,
+                suspectIds: suspectIds
             })
         });
 
@@ -752,7 +819,10 @@ crimeForm.addEventListener("submit", async function (event) {
                 body: JSON.stringify({
                     type: type,
                     date: date,
-                    location: location
+                    location: location,
+                    witnesses: witnesses,
+                    statements: statements,
+                    suspectIds: suspectIds
                 })
             }
         );
@@ -781,6 +851,9 @@ function editCrime(crimeId) {
     crimeTypeInput.value = crime.type;
     crimeDateInput.value = crime.date;
     crimeLocationInput.value = crime.location;
+    crimeWitnessesInput.value = crime.witnesses || "";
+    crimeStatementsInput.value = crime.statements || "";
+    displayCrimeSuspects(crime.suspectIds || []);
     crimeFormTitle.textContent = "Edit crime";
     saveCrimeButton.textContent = "Update";
     crimeFormError.textContent = "";
@@ -791,6 +864,7 @@ function editCrime(crimeId) {
 function resetCrimeForm() {
     editingCrimeId = null;
     crimeForm.reset();
+    displayCrimeSuspects([]);
     crimeFormError.textContent = "";
     crimeFormTitle.textContent = "New crime";
     saveCrimeButton.textContent = "Save";

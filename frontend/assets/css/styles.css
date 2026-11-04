@@ -457,6 +457,29 @@
     font-weight: 700;
 }
 
+.crime-suspect-options {
+    display: grid;
+    gap: 0.5rem;
+    max-height: 180px;
+    overflow-y: auto;
+    padding: 0.75rem;
+    border: 1px solid #a99676;
+    background: #fffaf0;
+}
+
+.page textarea {
+    background: #fffaf0;
+    border-color: #a99676;
+    color: #30291f;
+    resize: vertical;
+}
+
+.case-information {
+    margin-top: 0.6rem;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
 /* Suspect case report modal */
 .report-modal {
     /* Centre both reports horizontally and vertically. */

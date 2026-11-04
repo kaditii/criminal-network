@@ -1,4 +1,4 @@
-// Relative URLs use the same server as the page (port 5062).
+// Relative URLs use the same server as the page (port 5500).
 async function apiFetch(url, options = {}) {
     const response = await fetch(url, {
         ...options,

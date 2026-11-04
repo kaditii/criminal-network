@@ -68,6 +68,7 @@ using (var scope = app.Services.CreateScope())
 {
     var database = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     database.Database.EnsureCreated();
+    DatabaseInitializer.AddCrimeDetails(database);
     DatabaseInitializer.AddDetectiveTable(database);
     DatabaseInitializer.Seed(database);
 }

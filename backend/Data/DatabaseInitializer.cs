@@ -6,6 +6,17 @@ namespace CriminalNetwork.Api.Data;
 // Adds the same starter records currently shown by the frontend.
 public static class DatabaseInitializer
 {
+    // Add the new optional fields to older databases without deleting records.
+    public static void AddCrimeDetails(AppDbContext database)
+    {
+        var columns = database.Database.SqlQueryRaw<string>(
+            "SELECT name AS Value FROM pragma_table_info('Crimes')").ToList();
+        if (!columns.Contains("Witnesses"))
+            database.Database.ExecuteSqlRaw("ALTER TABLE Crimes ADD COLUMN Witnesses TEXT NOT NULL DEFAULT '';");
+        if (!columns.Contains("Statements"))
+            database.Database.ExecuteSqlRaw("ALTER TABLE Crimes ADD COLUMN Statements TEXT NOT NULL DEFAULT '';");
+    }
+
     // EnsureCreated cannot add tables to an existing database. This repeatable
     // schema upgrade adds accounts without replacing any case records.
     public static void AddDetectiveTable(AppDbContext database)

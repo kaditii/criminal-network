@@ -132,6 +132,7 @@
                 </button>
             </div>
 
+            <p class="case-subtitle mb-4">Crime records, witnesses, linked suspects and case statements.</p>
             <form id="crime-form" class="mb-6 hidden rounded bg-white p-4 shadow">
                 <h3 id="crime-form-title" class="mb-4 text-lg font-semibold">New crime</h3>
                 <div class="grid gap-4 md:grid-cols-3">
@@ -147,6 +148,20 @@
                         <label for="crime-location" class="mb-1 block">Location</label>
                         <input id="crime-location" type="text" required class="w-full rounded border p-2">
                     </div>
+                </div>
+                <div class="mt-4">
+                    <label for="crime-witnesses" class="mb-1 block">Witnesses</label>
+                    <textarea id="crime-witnesses" rows="2" placeholder="Witness names and contact notes"
+                              class="w-full rounded border p-2"></textarea>
+                </div>
+                <fieldset class="mt-4">
+                    <legend class="mb-1">Suspects linked to this crime</legend>
+                    <div id="crime-suspects" class="crime-suspect-options"></div>
+                </fieldset>
+                <div class="mt-4">
+                    <label for="crime-statements" class="mb-1 block">Statements / extra case information</label>
+                    <textarea id="crime-statements" rows="4" placeholder="Record witness statements and additional case details"
+                              class="w-full rounded border p-2"></textarea>
                 </div>
                 <p id="crime-form-error" class="mt-3 text-red-700"></p>
                 <div class="mt-4 flex gap-2">
@@ -302,7 +317,7 @@
 
                     <section class="report-section report-offences">
                         <h4>Recorded offences</h4>
-                        <p>No offences are linked to this suspect in the current data.</p>
+                        <div id="report-offences"></div>
                     </section>
 
                     <footer class="report-footer">
@@ -325,6 +340,10 @@
                         <div><dt>Date</dt><dd id="crime-report-date"></dd></div>
                         <div><dt>Location</dt><dd id="crime-report-location"></dd></div>
                     </dl>
+                </section>
+                <section class="report-section report-notes">
+                    <h4>Case information</h4>
+                    <div id="crime-report-extra"></div>
                 </section>
                 <footer class="report-footer">
                     <span>CRIMINAL NETWORK ANALYSIS UNIT</span>
