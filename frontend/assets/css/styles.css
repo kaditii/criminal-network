@@ -459,6 +459,10 @@
 
 /* Suspect case report modal */
 .report-modal {
+    /* Centre both reports horizontally and vertically. */
+    position: fixed;
+    inset: 0;
+    margin: auto;
     width: min(720px, calc(100% - 2rem));
     max-height: calc(100vh - 2rem);
     padding: 0;
@@ -487,10 +491,10 @@
 }
 
 .report-tab {
-    position: absolute;
-    top: 0;
-    left: 1.5rem;
-    transform: translateY(-48%);
+    /* Keep the folder label inside the scrollable report so it is not clipped. */
+    display: inline-block;
+    max-width: 100%;
+    margin-bottom: 1rem;
     padding: 0.45rem 1.2rem;
     border-radius: 5px 5px 0 0;
     background: #c4a96e;
